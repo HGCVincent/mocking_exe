@@ -20,13 +20,17 @@ public class SalesApp {
 		Sales sales = getSales(salesId);
 		if (sales == null) return;
 
-		List<SalesReportData> reportDataList = salesReportDao.getReportData(sales);
+		List<SalesReportData> reportDataList = getReportDataList(sales);
 
 		List<String> headers = getHeader(isNatTrade);
 
 		SalesActivityReport report = this.generateReport(headers, reportDataList);
 
 		uploadReportDocument(report);
+	}
+
+	public List<SalesReportData> getReportDataList(Sales sales) {
+		return salesReportDao.getReportData(sales);
 	}
 
 	public Sales getSales(String salesId) {
@@ -57,7 +61,7 @@ public class SalesApp {
 		return headers;
 	}
 
-	private SalesActivityReport generateReport(List<String> headers, List<SalesReportData> reportDataList) {
+	protected SalesActivityReport generateReport(List<String> headers, List<SalesReportData> reportDataList) {
 		// TODO Auto-generated method stub
 		return null;
 	}
