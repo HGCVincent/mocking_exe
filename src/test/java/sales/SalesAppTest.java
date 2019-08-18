@@ -3,10 +3,12 @@ package sales;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -19,6 +21,12 @@ public class SalesAppTest {
 
     @Mock
     SalesDao salesDao;
+
+    @Mock
+    SalesReportDao salesReportDao;
+
+    @InjectMocks
+    SalesApp mockSalesApp;
 
     @Test
     public void testGenerateReport_givenNotFoundSale_thenReturnNull() {
@@ -97,5 +105,19 @@ public class SalesAppTest {
         Sales result = mock(SalesApp.class).getSales(anyString());
 
         Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void testGetReportDataList_givenSale_thenReturnReportDataList() {
+        Sales sales = new Sales();
+        SalesApp salesApp = mock(SalesApp.class);
+        SalesReportData salesReportData = mock(SalesReportData.class);
+        List<SalesReportData> reportDatas = Arrays.asList(salesReportData);
+        when(salesReportDao.getReportData(sales)).thenReturn(reportDatas);
+
+        List<SalesReportData> result = mockSalesApp.getReportDataList(sales);
+
+        Assert.assertEquals(1,result.size());
+        verify(salesReportDao,times(1)).getReportData(sales);
     }
 }
