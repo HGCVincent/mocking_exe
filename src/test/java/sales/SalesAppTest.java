@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -119,5 +121,25 @@ public class SalesAppTest {
 
         Assert.assertEquals(1,result.size());
         verify(salesReportDao,times(1)).getReportData(sales);
+    }
+
+    @Test
+    public void testGetHeader_givenTrue_thenReturnHeaders() {
+        SalesApp salesApp = new SalesApp();
+        boolean isNatTrade = true;
+
+        List<String> result = salesApp.getHeader(isNatTrade);
+
+        assertEquals("Time",result.get(3));
+    }
+
+    @Test
+    public void testGetHeader_givenFalse_thenReturnHeaders() {
+        SalesApp salesApp = new SalesApp();
+        boolean isNatTrade = false;
+
+        List<String> result = salesApp.getHeader(isNatTrade);
+
+        assertEquals("Local Time",result.get(3));
     }
 }
