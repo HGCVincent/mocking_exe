@@ -27,6 +27,9 @@ public class SalesAppTest {
     @Mock
     SalesReportDao salesReportDao;
 
+    @Mock
+    EcmService ecmService;
+
     @InjectMocks
     SalesApp mockSalesApp;
 
@@ -112,7 +115,6 @@ public class SalesAppTest {
     @Test
     public void testGetReportDataList_givenSale_thenReturnReportDataList() {
         Sales sales = new Sales();
-        SalesApp salesApp = mock(SalesApp.class);
         SalesReportData salesReportData = mock(SalesReportData.class);
         List<SalesReportData> reportDatas = Arrays.asList(salesReportData);
         when(salesReportDao.getReportData(sales)).thenReturn(reportDatas);
@@ -141,5 +143,12 @@ public class SalesAppTest {
         List<String> result = salesApp.getHeader(isNatTrade);
 
         assertEquals("Local Time",result.get(3));
+    }
+
+    @Test
+    public void testUploadReportDocument_givenSalesActivityReport() {
+        SalesActivityReport salesActivityReport = new SalesActivityReport();
+        mockSalesApp.uploadReportDocument(salesActivityReport);
+        Mockito.verify(ecmService, times(1)).uploadDocument(anyString());
     }
 }
