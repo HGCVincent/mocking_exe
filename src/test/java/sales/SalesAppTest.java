@@ -4,12 +4,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -97,5 +100,18 @@ public class SalesAppTest {
         Sales result = mock(SalesApp.class).getSales(anyString());
 
         Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void testgetReportDataList_givenSales_thenReturnReportDataList() {
+        SalesApp salesApp = mock(SalesApp.class);
+        SalesReportDao salesReportDao = mock(SalesReportDao.class);
+        List<SalesReportData> reportDataList = Arrays.asList(new SalesReportData());
+        when(salesReportDao.getReportData(any())).thenReturn(reportDataList);
+
+        List<SalesReportData> result = salesApp.getReportDataList(any());
+
+        Assert.assertEquals(1, result.size());
+        Mockito.verify(salesReportDao, times(1)).getReportData(any());
     }
 }
