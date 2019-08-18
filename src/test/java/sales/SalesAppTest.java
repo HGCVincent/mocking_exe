@@ -1,14 +1,24 @@
 package sales;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SalesAppTest {
+
+    @Mock
+    SalesDao salesDao;
 
     @Test
     public void testGenerateReport_givenNotFoundSale_thenReturnNull() {
@@ -35,5 +45,57 @@ public class SalesAppTest {
         verify(salesApp, times(1)).getHeader(anyBoolean());
         verify(salesApp, times(1)).generateReport(anyList(),anyList());
         verify(salesApp, times(1)).uploadReportDocument(any());
+    }
+
+    @Test
+    public void testGetSales_givenNull_thenReturnNull() {
+        Sales sales = mock(SalesApp.class).getSales(null);
+        assertNull(sales);
+    }
+
+    @Test
+    public void testGetSales_givenSalesIdAndTodayIsAfterLastDate_thenReturnNull() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, +1);
+        Sales sales = mock(Sales.class);
+        when(sales.getEffectiveTo()).thenReturn(calendar.getTime());
+        when(sales.getEffectiveFrom()).thenReturn(calendar.getTime());
+        when(salesDao.getSalesBySalesId(anyString())).thenReturn(sales);
+
+        Sales result = mock(SalesApp.class).getSales(anyString());
+
+        Assert.assertNull(result);
+    }
+
+    @Test
+    public void testGetSales_givenSalesIdAndTodayIsBeforeLastDate_thenReturnNull() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+        Sales sales = mock(Sales.class);
+        when(sales.getEffectiveTo()).thenReturn(calendar.getTime());
+        when(sales.getEffectiveFrom()).thenReturn(calendar.getTime());
+        when(salesDao.getSalesBySalesId(anyString())).thenReturn(sales);
+
+        Sales result = mock(SalesApp.class).getSales(anyString());
+
+        Assert.assertNull(result);
+    }
+
+    @Test
+    public void testGetSales_givenSalesIdAndLegalDate_thenReturnSales() {
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(Calendar.DATE, -1);
+
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DATE, +1);
+
+        Sales sales = mock(Sales.class);
+        when(sales.getEffectiveTo()).thenReturn(tomorrow.getTime());
+        when(sales.getEffectiveFrom()).thenReturn(yesterday.getTime());
+        when(salesDao.getSalesBySalesId(anyString())).thenReturn(sales);
+
+        Sales result = mock(SalesApp.class).getSales(anyString());
+
+        Assert.assertNotNull(result);
     }
 }
